@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """One Word, One Username, One Reward.
 
-Writes the entrant's own make.fun handle, exactly one word, to
-/output/entry.txt for the judge to read.
+The program writes the entrant's own make.fun handle — exactly one word —
+to /output/entry.txt, where the competition's judge reads it.
 """
 
 import os
@@ -12,22 +12,23 @@ OUTPUT_PATH = "/output/entry.txt"
 
 
 def entry_text() -> str:
-    """Return the single-word username, trimmed to one token."""
+    """Return the handle as a single word, at most 30 characters."""
     word = HANDLE.strip()
-    assert " " not in word and 1 <= len(word) <= 30, "handle must be one word"
+    if " " in word or not 1 <= len(word) <= 30:
+        raise ValueError("handle must be one word of 1-30 characters")
     return word
 
 
 def main() -> None:
     text = entry_text()
-    out_dir = os.path.dirname(OUTPUT_PATH)
-    if out_dir:
-        os.makedirs(out_dir, exist_ok=True)
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as handle_file:
-        handle_file.write(text)
-    # Confirm what landed on disk is exactly the one word, no newline.
-    with open(OUTPUT_PATH, "r", encoding="utf-8") as handle_file:
-        assert handle_file.read() == text
+    folder = os.path.dirname(OUTPUT_PATH)
+    if folder:
+        os.makedirs(folder, exist_ok=True)
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as out:
+        out.write(text)
+    with open(OUTPUT_PATH, "r", encoding="utf-8") as out:
+        written = out.read()
+    assert written == text, "output must be exactly the one word"
     print(text)
 
 
